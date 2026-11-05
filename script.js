@@ -10,3 +10,13 @@ if ('IntersectionObserver' in window && !matchMedia('(prefers-reduced-motion: re
  const observer = new IntersectionObserver(entries => entries.forEach(entry => { if (entry.isIntersecting) { entry.target.classList.add('visible'); observer.unobserve(entry.target); } }), { threshold: 0.08 });
  document.querySelectorAll('main > section:not(.hero)').forEach(section => { section.classList.add('reveal'); observer.observe(section); });
 }
+const emailButton = document.querySelector('.copy-email');
+const copyStatus = document.querySelector('.copy-status');
+emailButton.addEventListener('click', async () => {
+  try {
+    await navigator.clipboard.writeText(emailButton.dataset.email);
+    copyStatus.textContent = 'Скопировано';
+  } catch {
+    copyStatus.textContent = 'Не удалось скопировать. Выделите и скопируйте адрес вручную.';
+  }
+});
