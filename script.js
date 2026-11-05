@@ -27,7 +27,9 @@ function copyWithSelection(text) {
   emailButton.focus({ preventScroll: true });
   return copied;
 }
+let copyStatusTimer;
 emailButton.addEventListener('click', async () => {
+  clearTimeout(copyStatusTimer);
   const email = emailButton.dataset.email;
   copyStatus.textContent = '';
   // Run the fallback during the click, while browser user activation is valid.
@@ -36,6 +38,9 @@ emailButton.addEventListener('click', async () => {
     try { await navigator.clipboard.writeText(email); copied = true; } catch {}
   }
   copyStatus.textContent = copied ? 'Скопировано' : 'Браузер запретил копирование. Адрес выделен — скопируйте его вручную.';
+  if (copied) {
+    copyStatusTimer = setTimeout(() => { copyStatus.textContent = ''; }, 2000);
+  }
   if (!copied) {
     const range = document.createRange();
     range.selectNodeContents(emailButton);
