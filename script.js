@@ -12,11 +12,35 @@ if ('IntersectionObserver' in window && !matchMedia('(prefers-reduced-motion: re
 }
 const emailButton = document.querySelector('.copy-email');
 const copyStatus = document.querySelector('.copy-status');
+function copyWithSelection(text) {
+  const field = document.createElement('textarea');
+  field.value = text;
+  field.readOnly = true;
+  field.style.cssText = 'position:fixed;top:0;left:0;opacity:0;font-size:16px;';
+  document.body.append(field);
+  field.focus();
+  field.select();
+  field.setSelectionRange(0, text.length);
+  let copied = false;
+  try { copied = document.execCommand('copy'); } catch {}
+  field.remove();
+  emailButton.focus({ preventScroll: true });
+  return copied;
+}
 emailButton.addEventListener('click', async () => {
-  try {
-    await navigator.clipboard.writeText(emailButton.dataset.email);
-    copyStatus.textContent = 'Скопировано';
-  } catch {
-    copyStatus.textContent = 'Не удалось скопировать. Выделите и скопируйте адрес вручную.';
+  const email = emailButton.dataset.email;
+  copyStatus.textContent = '';
+  // Run the fallback during the click, while browser user activation is valid.
+  let copied = copyWithSelection(email);
+  if (!copied && navigator.clipboard?.writeText) {
+    try { await navigator.clipboard.writeText(email); copied = true; } catch {}
+  }
+  copyStatus.textContent = copied ? 'Скопировано' : 'Браузер запретил копирование. Адрес выделен — скопируйте его вручную.';
+  if (!copied) {
+    const range = document.createRange();
+    range.selectNodeContents(emailButton);
+    const selection = window.getSelection();
+    selection.removeAllRanges();
+    selection.addRange(range);
   }
 });
