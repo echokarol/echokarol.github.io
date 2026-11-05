@@ -37,7 +37,7 @@ emailButton.addEventListener('click', async () => {
   if (!copied && navigator.clipboard?.writeText) {
     try { await navigator.clipboard.writeText(email); copied = true; } catch {}
   }
-  copyStatus.textContent = copied ? 'Скопировано' : 'Браузер запретил копирование. Адрес выделен — скопируйте его вручную.';
+  copyStatus.textContent = copied ? (document.documentElement.lang === 'en' ? 'Copied' : 'Скопировано') : (document.documentElement.lang === 'en' ? 'Copying is blocked. The address is selected — copy it manually.' : 'Браузер запретил копирование. Адрес выделен — скопируйте его вручную.');
   if (copied) {
     copyStatusTimer = setTimeout(() => { copyStatus.textContent = ''; }, 2000);
   }
