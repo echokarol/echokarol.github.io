@@ -49,3 +49,16 @@ emailButton.addEventListener('click', async () => {
     selection.addRange(range);
   }
 });
+const objectCard = document.querySelector('.interface-object');
+const finePointer = matchMedia('(hover: hover) and (pointer: fine)');
+const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
+objectCard.addEventListener('pointermove', event => {
+ if (!finePointer.matches || reducedMotion.matches) return;
+ const rect = objectCard.getBoundingClientRect();
+ const x = (event.clientX - rect.left) / rect.width - .5;
+ const y = (event.clientY - rect.top) / rect.height - .5;
+ objectCard.style.transform = `perspective(1000px) rotateX(${-y*5}deg) rotateY(${x*6}deg) rotateZ(3deg)`;
+});
+function resetObject() { objectCard.style.transform = ''; }
+objectCard.addEventListener('pointerleave', resetObject);
+reducedMotion.addEventListener('change', resetObject);
